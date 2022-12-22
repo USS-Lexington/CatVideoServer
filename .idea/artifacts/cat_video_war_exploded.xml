@@ -1,0 +1,18 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="cat-video:war exploded">
+    <output-path>$PROJECT_DIR$/out/artifacts/cat_video_war_exploded</output-path>
+    <root id="root">
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="cat-video" />
+        </element>
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="Maven: org.mybatis:mybatis:3.5.5" />
+          <element id="library" level="project" name="Maven: mysql:mysql-connector-java:5.1.34" />
+          <element id="library" level="project" name="Maven: com.alibaba:fastjson:1.2.62" />
+        </element>
+      </element>
+      <element id="javaee-facet-resources" facet="cat-video/web/Web" />
+    </root>
+  </artifact>
+</component>

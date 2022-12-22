@@ -1,0 +1,94 @@
+*{
+	border: none;
+	padding: 0;
+	margin: 0;
+}
+#app>.el-container {
+	margin-bottom: 40px;
+}
+.el-header, .el-footer {
+	padding: 0;
+	/*background-color: #DDDDDD;*/
+	color: #333;
+	text-align: center;
+	line-height: 60px;
+}
+.el-main {
+	width: 80%;
+	/*background-color: #50a9ff;*/
+	color: #333;
+	text-align: center;
+	line-height: 160px;
+	padding: 0 20px 0 20px;
+}
+.el-main>.el-header{
+	color:#409EFF;
+	text-align: right;
+	font-size: 1.2em;
+}
+.el-aside {
+	width: 20% !important;
+	/*background-color: #a40000;*/
+	color: #333;
+	text-align: center;
+	line-height: 200px;
+	padding: 0 20px 0 20px;
+}
+.el-aside>.el-header{
+	text-align: left;
+	color: #F56C6C;
+	font-size: 1.2em;
+	/*padding: 0 20px 0 20px;*/
+}
+.el-aside>.el-table{
+	/*padding: 0 20px 0 20px;*/
+	width: 100%;
+}
+.el-menu{
+	/*float: left;*/
+}
+.el-menu>.homeButton{
+	float: left;
+}
+.el-menu>li:not(.homeButton){
+	float: right;
+}
+/*.logo-image{*/
+/*	display: inline-block;*/
+/*	height: 60px;*/
+/*	width: 213px;*/
+/*	background-image: url("../images/logo.png ");*/
+/*	background-size: cover;*/
+/*	user-select: none;*/
+/*}*/
+.time {
+	font-size: 13px;
+	color: #999;
+}
+.el-card>div{
+	line-height: normal;
+}
+.bottom {
+	margin-top: 13px;
+	line-height: 12px;
+}
+
+.button {
+	padding: 0;
+	float: right;
+}
+
+.image {
+	width: 100%;
+	display: block;
+}
+
+.clearfix:before,
+.clearfix:after {
+	display: table;
+	content: "";
+}
+
+.clearfix:after {
+	clear: both
+}

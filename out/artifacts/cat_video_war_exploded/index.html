@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="zh-cn">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport"
+	      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Cat Movie</title>
+	<script src="js/vue.js"></script>
+	<script src="element-ui/lib/index.js"></script>
+	<script src="./js/axios.js"></script>
+	<script src="./js/vue-resource.js"></script>
+	<script src="./js/jquery-3.5.1.js"></script>
+	<link rel="stylesheet" href="element-ui/lib/theme-chalk/index.css">
+	<link rel="stylesheet" href="css/base.css">
+	<link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+<div id="app">
+	<el-container>
+		<el-dialog custom-class="previewDialog" :visible.sync="loginDialogVisible" width="30%">
+			<div slot="title" class="login">
+				<el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form">
+					<h3 class="title">登录/注册</h3>
+					<el-form-item prop="username">
+						<el-input
+								v-model="loginForm.username"
+								type="text"
+								auto-complete="off"
+								placeholder="账号"
+						>
+						</el-input>
+					</el-form-item>
+					<el-form-item prop="password">
+						<el-input
+								v-model="loginForm.password"
+								type="password"
+								auto-complete="off"
+								placeholder="密码"
+								@keyup.enter.native="handleLogin"
+						>
+						</el-input>
+					</el-form-item>
+					<el-form-item style="width:100%;">
+						<el-button
+								size="medium"
+								type="primary"
+								style="width:100%;"
+								@click.native.prevent="handleLogin"
+						>
+							<span>登录/注册</span>
+						</el-button>
+					</el-form-item>
+					<span>未注册的用户会自动注册</span>
+				</el-form>
+			</div>
+		</el-dialog>
+		<el-dialog custom-class="previewDialog" :visible.sync="uploadDialogVisible" width="30%">
+			<div slot="title" class="login">
+				<el-form ref="loginForm" :model="uploadForm" :rules="uploadRules" class="login-form" >
+					<h3 class="title">视频上传</h3>
+					<el-form-item prop="title">
+						<el-input
+								v-model="uploadForm.title"
+								type="text"
+								auto-complete="off"
+								placeholder="标题"
+						>
+						</el-input>
+					</el-form-item>
+					<el-form-item prop="artist">
+						<el-input
+								v-model="uploadForm.artist"
+								type="text"
+								auto-complete="off"
+								placeholder="导演"
+						>
+						</el-input>
+					</el-form-item>
+					<el-form-item prop="description">
+						<el-input
+								v-model="uploadForm.description"
+								type="text"
+								auto-complete="off"
+								placeholder="详细信息"
+						>
+						</el-input>
+					</el-form-item>
+					<el-form-item prop="image">
+						<el-input
+								v-model="uploadForm.image"
+								type="text"
+								auto-complete="off"
+								placeholder="封面链接"
+						>
+						</el-input>
+					</el-form-item>
+					<el-form-item prop="video">
+						<el-input
+								v-model="uploadForm.video"
+								type="text"
+								auto-complete="off"
+								placeholder="视频链接"
+						>
+						</el-input>
+					</el-form-item>
+					<el-form-item style="width:100%;">
+						<el-button
+								size="medium"
+								type="primary"
+								style="width:100%;"
+								@click.native.prevent="handleUpload"
+						>
+							<span>上传</span>
+						</el-button>
+					</el-form-item>
+				</el-form>
+			</div>
+		</el-dialog>
+		<el-header>
+			<el-menu :default-active="activeIndex" class="el-menu" mode="horizontal" @select="handleSelect">
+				<el-menu-item index="0" class="homeButton">主页</el-menu-item>
+				<el-menu-item index="4">视频上传</el-menu-item>
+				<el-menu-item index="3">个人中心</el-menu-item>
+				<el-menu-item index="2">注册</el-menu-item>
+				<el-menu-item index="1">登录</el-menu-item>
+			</el-menu>
+		</el-header>
+		<el-container>
+			<el-aside>
+				<el-header>
+					<span>今日热映</span>
+				</el-header>
+				<el-table :data="videoList">
+					<el-table-column
+							prop="title"
+							label="片名"
+							width="100px">
+					</el-table-column>
+					<el-table-column
+							prop="artist"
+							label="导演">
+					</el-table-column>
+				</el-table>
+			</el-aside>
+			<el-main>
+				<el-header>
+					<span>
+						所有影片
+					</span>
+				</el-header>
+				<el-row :gutter="10">
+					<!--					<el-col :span="8" v-for="(o, index) in 2" :key="o" :offset="index > 0 ? 2 : 0">-->
+					<el-col :span="8" v-for="(o, index) in videoList" :key="index">
+						<el-card :body-style="{ padding: '0px' }">
+							<img v-bind:src="o.image"
+							     class="image">
+							<!--							<img src="./images/aqua_1." class="image">-->
+							<div style="padding: 14px;">
+								<span>{{ o.title }}</span>
+								<div class="bottom clearfix">
+									<!--							<time class="time">{{ currentDate }}</time>-->
+									<span class="time">{{ o.description }}</span>
+									<el-button type="text" class="button" @click="playVideo(o)">观看</el-button>
+								</div>
+							</div>
+						</el-card>
+					</el-col>
+				</el-row>
+				<el-dialog
+						:visible.sync="playerDialogVisible"
+						width="100%"
+						:before-close="playerClose"
+				>
+					<video id="player" controls width="800" height="480" v-bind:poster="playing.videoImage">
+						<source v-bind:src="playing.videoURL" type="video/mp4">
+					</video>
+					<span slot="footer" class="dialog-footer">
+            <el-button @click="playerClose">关闭</el-button>
+          </span>
+				</el-dialog>
+			</el-main>
+		</el-container>
+		<el-footer>豫网备000001号</el-footer>
+	</el-container>
+</div>
+<script>
+
+	let vm = new Vue({
+		el: '#app',
+		data() {
+			return {
+				loginDialogVisible: false,
+				uploadDialogVisible: false,
+				playerDialogVisible: false,
+				activeIndex: "0",
+				text: "所有影片",
+				videoList: [{
+					vid: 1,
+					title: "2222",
+					artist: "0000"
+				}, {
+					vid: 2,
+					title: "1111",
+					artist: "0000"
+				}, {
+					vid: 3,
+					title: "0000",
+					artist: "0000"
+				}],
+				loginForm: {
+					username: null,
+					password: null
+				},
+				loginRules: {
+					username: [
+						{required: true, trigger: "blur", message: "请输入您的账号"}
+					],
+					password: [
+						{required: true, trigger: "blur", message: "请输入您的密码"}
+					]
+				},
+				uploadForm: {
+					title: null,
+					artist: null,
+					description: null,
+					image: null,
+					video: null
+				},
+				uploadRules: {
+					title: [
+						{required: true, trigger: "blur", message: "请输入片名"}
+					], artist: [
+						{required: true, trigger: "blur", message: "请输入导演信息"}
+					], image: [
+						{required: true, trigger: "blur", message: "请输入封面链接"}
+					], video: [
+						{required: true, trigger: "blur", message: "请输入视频链接"}
+					]
+				},
+				playing: {
+					videoImage: null,
+					videoURL: null
+				}
+			}
+		},
+		methods: {
+			handleSelect(key, keyPath) {
+				// console.log(key);
+				// console.log(typeof (key));
+				if (key === "1" || key === "2") {
+					this.loginDialogVisible = true;
+					// console.log("123");
+				}
+				switch (key) {
+					case "1":
+						this.loginDialogVisible = true;
+						break;
+					case "2":
+						this.loginDialogVisible = true;
+						break;
+					case "4":
+						this.uploadDialogVisible = true;
+						break;
+					default:
+						break;
+				}
+			},
+			handleLogin() {
+				console.log(this.loginForm);
+			},
+			handleUpload() {
+				console.log(this.uploadForm);
+				let uploadData=this.uploadForm;
+				axios.get('http://localhost:8080/catvideo/VideoUploadServlet',uploadData)
+						.then((response)=>{
+							if(response.code===200){
+								alert(response.data);
+							}
+						})
+						.catch((error)=>{
+							console.log(error);
+						})
+			},
+			getVideoList() {
+				axios
+						.get('http://localhost:8080/catvideo/VideoGetAllServlet')
+						.then(response => {
+							this.videoList = response.data;
+							// console.log(this.tableData);
+						})
+						.catch(function (error) {
+							// 请求失败处理
+							// console.log(error);
+						})
+			},
+			playerClose() {
+				this.playerDialogVisible = false;
+				const player = document.getElementById("player");
+				player.pause();
+			},
+			playVideo(select) {
+				this.playing.videoImage = select.image;
+				this.playing.videoURL = select.video;
+				this.playerDialogVisible = true;
+			}
+		},
+		created() {
+			this.getVideoList();
+		}
+	})
+
+</script>
+</body>
+
+</html>

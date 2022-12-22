@@ -1,0 +1,10 @@
+.el-aside>.el-table{
+	line-height: 20px;
+	padding: 0;
+}
+.el-aside>.el-table *{
+	padding: 0;
+}
+.el-aside>.el-table tr td{
+	height: 40px;
+}
